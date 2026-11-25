@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyper-Dimensional Models in Geoscience — Landscape Scan 2026-11-25</title>
+<style>
+  :root {
+    --bg: #fafaf7; --card: #ffffff; --ink: #1a1f2b; --muted: #5c6470;
+    --accent: #0d6e6e; --accent-soft: #e3f1f0; --line: #e2e0d8;
+    --tag-a: #b45309; --tag-a-bg: #fef3c7; --tag-b: #1d4ed8; --tag-b-bg: #dbeafe;
+    --tag-c: #047857; --tag-c-bg: #d1fae5; --tag-x: #9f1239; --tag-x-bg: #ffe4e6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.55; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  header.hero { border-bottom: 3px solid var(--accent); padding-bottom: 1.25rem; margin-bottom: 1.5rem; }
+  .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .72rem; color: var(--accent); font-weight: 700; }
+  h1 { font-size: 1.7rem; line-height: 1.25; margin: .4rem 0 .5rem; }
+  .runmeta { font-size: .8rem; color: var(--muted); }
+  .headline { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: .9rem 1.1rem; margin: 1.25rem 0; font-size: .95rem; }
+  .headline strong { color: var(--accent); }
+  h2 { font-size: 1.15rem; margin: 2.2rem 0 .6rem; padding-top: .6rem; border-top: 1px solid var(--line); }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: .95rem; margin: 1.4rem 0 .4rem; }
+  p { margin: .5rem 0; }
+  ul { padding-left: 1.2rem; margin: .5rem 0; }
+  li { margin: .3rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(13,110,110,.35); }
+  a:hover { border-bottom-color: var(--accent); }
+  .exec { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: .85rem 1.1rem; margin: .75rem 0 1rem; font-size: .88rem; }
+  .exec::before { content: "EXECUTIVE SUMMARY"; display: block; font-size: .68rem; letter-spacing: .1em; font-weight: 700; color: var(--accent); margin-bottom: .35rem; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 10px; margin: .6rem 0; overflow: hidden; }
+  details[open] { box-shadow: 0 2px 10px rgba(26,31,43,.06); }
+  summary { cursor: pointer; padding: .8rem 1.1rem; font-weight: 600; font-size: .92rem; list-style: none; display: flex; align-items: center; gap: .6rem; user-select: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "▸"; color: var(--accent); transition: transform .15s ease; font-size: .8rem; }
+  details[open] > summary::before { transform: rotate(90deg); }
+  summary:hover { background: var(--accent-soft); }
+  .body { padding: .2rem 1.1rem 1rem; font-size: .88rem; }
+  .body > *:first-child { margin-top: 0; }
+  .tag { display: inline-block; font-size: .68rem; font-weight: 700; padding: .1rem .45rem; border-radius: 999px; vertical-align: middle; letter-spacing: .03em; }
+  .tag.a { color: var(--tag-a); background: var(--tag-a-bg); }
+  .tag.b { color: var(--tag-b); background: var(--tag-b-bg); }
+  .tag.c { color: var(--tag-c); background: var(--tag-c-bg); }
+  .tag.x { color: var(--tag-x); background: var(--tag-x-bg); }
+  table { border-collapse: collapse; width: 100%; font-size: .82rem; margin: .6rem 0; }
+  th { text-align: left; background: var(--accent-soft); color: var(--ink); padding: .45rem .6rem; border: 1px solid var(--line); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; }
+  td { padding: .45rem .6rem; border: 1px solid var(--line); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(13,110,110,.03); }
+  .pill-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .4rem 0; }
+  .pill { font-size: .75rem; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: .15rem .6rem; font-weight: 600; }
+  .note { font-size: .8rem; color: var(--muted); font-style: italic; }
+  .verdict { background: #fdf6ec; border: 1px solid #f0dfc0; border-radius: 8px; padding: .7rem .9rem; margin: .6rem 0; font-size: .86rem; }
+  code { background: #f0efe9; border-radius: 4px; padding: .08rem .3rem; font-size: .82em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .coverage-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--accent) var(--pct), #e8e6de var(--pct)); margin-top: .3rem; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .75rem; color: var(--muted); }
+  @media print { details { box-shadow: none; } details:not([open]) .body { display: none; } summary::before { display:none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Lithos · Research Report · abdopus hd-geoscience-scan</div>
+  <h1>Public projects leveraging hyper-dimensional models in geochemistry, economic geology, geostratigraphy, petrology, and mining exploration</h1>
+  <div class="runmeta">2026-11-25 · 4 agents (3 workers + director), 1 wave, 0 escalations · gate: d≈0.05 &lt; tau=0.3, all deterministic checks passed → director review skipped · 11/11 first-wave predictions hit · 10/10 spot-checked URLs live · follow-up passes: Sonnet 5.5 petrology deep dive + 2-worker loose-ends verification (all checks passed)</div>
+</header>
+
+<div class="headline">
+  <strong>Headline finding:</strong> Across three interpretations of "hyper-dimensional," <strong>zero public projects apply true Hyperdimensional Computing / Vector-Symbolic Architectures (HDC/VSA) to any of the five domains.</strong> The real activity is in high-dimensional latent-space ML (embeddings, foundation models), which is dense and growing fast.
+</div>
+
+<div class="exec">
+  If "hyper-dimensional" means HDC/VSA — the field is <strong>empty</strong>; every hit is either adjacent-field work (hyperspectral, wildfire, seismology), a mislabel (4D ML, hyperspectral, hypergraph), or paper-mill noise. If it means high-dimensional latent ML — the field is <strong>active and consolidating around foundation models</strong>: 20+ public projects verified, with mineral prospectivity the densest domain and geostratigraphy the clearest open niche. Petrology has exactly one latent-space model (PhaseCast, code now released). Interpretation C (literal n-D simulation) has one genuine tool (G2S).
+</div>
+
+<h2>Interpretations used</h2>
+<div class="pill-row">
+  <span class="pill">A — HDC / VSA</span>
+  <span class="pill">B — latent-space ML</span>
+  <span class="pill">C — literal n-D spatial</span>
+</div>
+<ul>
+  <li><span class="tag a">A</span> <strong>Hyperdimensional Computing / Vector Symbolic Architectures:</strong> very high-dimensional distributed representations (thousands-to-10,000s-dim vectors, binding/bundling/permutation ops, holographic reduced representations).</li>
+  <li><span class="tag b">B</span> <strong>High-dimensional latent-space ML:</strong> embeddings, foundation models, contrastive/manifold learning on geoscience data.</li>
+  <li><span class="tag c">C</span> <strong>Literally higher-dimensional spatial models:</strong> 4D+/n-D cell-based geological simulation, hypercube representations of stratigraphy/geochemistry.</li>
+</ul>
+<p class="note">"Public project" = open-source repo, paper with public code, or openly documented government/academic tool.</p>
+
+<h2>Findings</h2>
+
+<details open>
+  <summary>Interpretation A — true HDC/VSA: none in-domain</summary>
+  <div class="body">
+    <div class="exec">
+      All four agents independently converged on <strong>zero</strong>. The exact-match searches are themselves the evidence: six GitHub queries (<code>hyperdimensional</code> + each domain, <code>"vector symbolic" geology</code>, <code>"holographic reduced representation" geology</code>) returned 0 repos, and 12 web-search queries for HDC/VSA + the five domains returned no genuine hits. The closest real HDC work is in remote sensing and seismology — none in the five core domains.
+    </div>
+    <p>All four agents independently converged on zero. The exact-match searches are themselves the evidence — <code>hyperdimensional geochemistry</code>, <code>hyperdimensional geology</code>, <code>hyperdimensional mining</code>, <code>hyperdimensional stratigraphy</code>, <code>hyperdimensional petrology</code>, <code>"vector symbolic" geology</code>, <code>"holographic reduced representation" geology</code> all returned 0 GitHub repos, and 12 web-search queries for HDC/VSA + the five domains returned no genuine hits.</p>
+    <h3>Closest adjacent HDC/VSA work (different domains)</h3>
+    <ul>
+      <li><a href="https://github.com/TUC-ProAut/HDC_MiniROCKET">HDC-MiniROCKET</a> — genuine HDC time-encoding over MiniROCKET features; follow-up applies it to <strong>hyperspectral</strong> pixel-spectra classification (<a href="https://arxiv.org/abs/2509.13809">arXiv:2509.13809</a>). ADJACENT (remote sensing).</li>
+      <li><a href="https://cin.philab.esa.int/databases/projects/hyper-edge-hyperdimensional-computing-for-on-board-wildfire-detection-and-air-quality-assessment">ESA HYPER-EDGE</a> — ESA Φ-lab study explicitly using HDC/VSA binding/bundling for on-board wildfire detection. ADJACENT.</li>
+      <li><a href="https://arxiv.org/abs/2510.10718">HYPERDOA</a> — HDC direction-of-arrival estimation citing seismic monitoring as motivation. ADJACENT (paper-only).</li>
+    </ul>
+    <h3>Rejected mislabels (the trap surface)</h3>
+    <ul>
+      <li>SGA2027 "Hyperdimensional Prospectivity" workshop — 4D spatiotemporal ML, not HDC.</li>
+      <li>"Change Detection in Hyperdimensional Images" — hyperspectral imagery, not HDC.</li>
+      <li>HyperMinNet — hypergraph GNN, not hyperdimensional.</li>
+      <li>"Hyperdimensional phase space" petrology papers — interpretation C, not HDC.</li>
+      <li>freederia.com corpus — paper-mill content fabricating HDC math for ore-prediction topics.</li>
+    </ul>
+  </div>
+</details>
+
+<details open>
+  <summary>Interpretation B — high-dimensional latent-space ML: where the real work is</summary>
+  <div class="body">
+    <div class="exec">
+      <strong>20+ verified public projects.</strong> The flagship cluster: open geochemical anomaly benchmarks (GeoChemAD/OpenGADBench), geoscience foundation LLMs (GeoGalactica, K2, GeoMinLM, JiuZhou, MetalGPT-1), vision/embedding models for exploration (DeepAndes, AlphaEarth, PEACE), and a growing anomaly-detection line (Geo-Hgan, causal-VAE, DAN-GRF, DEEP-SEAM). Economic geology / MPM is the densest domain.
+    </div>
+    <h3>Core findings table</h3>
+    <table>
+      <tr><th>Project</th><th>Domain</th><th>What it is</th><th>Code</th></tr>
+      <tr><td><a href="https://arxiv.org/abs/2603.13068">GeoChemAD / GeoChemFormer</a></td><td>Geochemistry + exploration</td><td>Self-supervised transformer pretraining on multi-region geochemical survey data (GSWA + GSC); first open geochemical anomaly-detection benchmark; evolved into <a href="https://github.com/yihaoding/geochemad">OpenGADBench</a> (10 tasks, 12 baselines)</td><td>MIT, live</td></tr>
+      <tr><td><a href="https://github.com/spadarian/GeoVec">GeoVec</a></td><td>Cross-cutting vocabulary</td><td>GloVe embeddings on ~280k geoscience documents; latent interpolation recovers metamorphic-grade gradients</td><td>Live + <a href="https://doi.org/10.17605/OSF.IO/4UYEQ">OSF vectors</a></td></tr>
+      <tr><td><a href="https://github.com/IFuentesSR/GeoVectoLitho">GeoVectoLitho</a></td><td>Geostratigraphy</td><td>GeoVec embeddings of borehole lithology descriptions → supervised classification → <strong>3D voxel models</strong> (B + C combined)</td><td>Live</td></tr>
+      <tr><td><a href="https://github.com/geobrain-ai/geogalactica">GeoGalactica</a></td><td>Cross-cutting</td><td>30B-parameter open geoscience foundation LLM (65B tokens)</td><td>Live</td></tr>
+      <tr><td><a href="https://github.com/davendw49/k2">K2</a></td><td>Cross-cutting</td><td>LLaMA-7B continued-pretraining geoscience LLM, open data pipeline</td><td>Live</td></tr>
+      <tr><td><a href="https://github.com/wangcug/GeoMinLM">GeoMinLM</a></td><td>Economic geology</td><td>Domain LLM for geological-mineral survey Q&amp;A (Ore Geology Reviews 2025)</td><td>Live</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2410.12330">MAX</a></td><td>Geochemistry (drill-core)</td><td>Masked-autoencoder foundation model on XRF spectra from 6 scientific drilling projects</td><td>Via <a href="https://github.com/dispink/xpt">xpt tooling</a></td></tr>
+      <tr><td><a href="https://github.com/geopacha/DeepAndes">DeepAndes</a></td><td>Mining exploration</td><td>DINOv2-based vision foundation model on 3M multispectral satellite images for Andes lithologic/alteration mapping</td><td>Live</td></tr>
+      <tr><td><a href="https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/">AlphaEarth Foundations</a></td><td>Prospectivity</td><td>DeepMind embedding-field model from petabytes of EO data; already applied to copper prospectivity (Ore Geology Reviews 2026) and alteration mapping</td><td>Embeddings public via Earth Engine</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2610.36429">PhaseCast</a></td><td>Petrology</td><td>Transformer on ~788k whole-rock compositions + ~1M simulated petrological labels; zero-shot mineralogy prediction (NeurIPS 2026)</td><td><a href="https://github.com/matthew-j-liu/phasecast">Live</a> (MIT, released 2026-11) — see petrology deep dive</td></tr>
+      <tr><td><a href="https://www.sciencedirect.com/science/article/abs/pii/S0098300425000639">Graph-SSL geochemical anomalies</a></td><td>Geochemistry</td><td>Geological-knowledge-guided graph self-supervised pretraining</td><td><a href="https://github.com/1321SAJDQW/A-geological-knowledge-guided-self-supervised-graph-pretraining-">Live</a></td></tr>
+    </table>
+    <h3>GitHub sweep additions (B-tagged)</h3>
+    <p><a href="https://github.com/AhmedHeshamEG/craton">craton</a> (solid-Earth foundation model) · <a href="https://github.com/douyimin/GEM">GEM</a> ("Geological Everything Model 3D") · <a href="https://github.com/jqfzfb/cross-domain-seismic-fm">cross-domain-seismic-fm</a> · <a href="https://github.com/ukpaiuj2014-commits/geopredict-geological-prospectivity">geopredict-geological-prospectivity</a> · <a href="https://github.com/Makkoran/critical-mineral-ml-canadian-shield">critical-mineral-ml-canadian-shield</a> · plus the curated <a href="https://github.com/RichardScottOZ/mineral-exploration-machine-learning">mineral-exploration-machine-learning</a> list.</p>
+    <h3>Verified loose ends (follow-up pass, all primary-source verified)</h3>
+    <ul>
+      <li><a href="https://github.com/cbn001012/Geo-Hgan-Unsupervised-anomaly-detection-in-geochemical-data-via-latent-space-learning">Geo-Hgan</a> — autoencoder + latent-space GAN for unsupervised geochemical anomaly detection (Ding et al., <em>Computers &amp; Geosciences</em> 192:105703, 2024, <a href="https://doi.org/10.1016/j.cageo.2024.105703">doi</a>; 85% AUROC). <span class="tag b">B</span> economic geology, Apache-2.0, live.</li>
+      <li><a href="https://www.sciencedirect.com/science/article/pii/S0098300425002407">Causal-VAE geochemical anomalies</a> — Ni &amp; Xiong, interpretable causal VAE (SCM DAG over ore-controlling factors, counterfactual reasoning; 39-dim input → 117-dim latent; Nanling case study), <em>C&amp;G</em> 208:106090, Feb 2026, <a href="https://doi.org/10.1016/j.cageo.2025.106090">doi</a>. <span class="tag b">B</span> code <a href="https://github.com/kiritonfan/An-interpretable-causal-variational-autoencoder">live</a> (MIT).</li>
+      <li><a href="https://gmd.copernicus.org/articles/19/2593/2026">DEEP-SEAM</a> — explainable semi-supervised deep learning (DevNet) for REE prospectivity, Northern Curnamona Province, South Australia; 57 multi-source features, SHAP interpretability (Luo et al., <em>GMD</em> 19:2593–2625, 2026; preprint <a href="https://doi.org/10.5194/egusphere-2025-3283">EGUsphere-2025-3283</a>). <span class="tag b">B</span> code on <a href="https://doi.org/10.5281/zenodo.17098677">Zenodo</a> + <a href="https://github.com/EarthByte/MPM_Curnamona_REE">github.com/EarthByte/MPM_Curnamona_REE</a> (GPL-3.0).</li>
+      <li><a href="https://github.com/connamulder/PetroMind">PetroMind</a> — multimodal petrographic foundation model built on Qwen2.5-VL (LoRA adapters; rock-image classification ≈97% accuracy, lithological description generation; SA-Rock metric), Chen et al., <em>Appl. Comput. Geosci.</em> 29:100314, 2026, <a href="https://doi.org/10.1016/j.acags.2025.100314">doi</a>. <span class="tag b">B</span> petrology-relevant but <strong>imagery-only</strong> (thin-section photos, no geochemistry), Apache-2.0, live.</li>
+      <li><a href="https://link.springer.com/article/10.1007/s11053-025-10564-0">Parsa et al. 2026</a> — fine-tuned BERT (768-d embeddings per H3 cell, 1.8M cells across Canada) + self-supervised transformer over 790 covariates (50-d embeddings) for critical-minerals prospectivity mapping (MVT Zn–Pb), <em>Nat. Resour. Res.</em> 35:207–225. <span class="tag b">B</span> economic geology; no official code, third-party implementation <a href="https://github.com/RichardScottOZ/geoscience-transformers-for-predictive-mapping-of-critical-minerals">live</a>.</li>
+    </ul>
+    <h3>Additional projects via the Taghipour et al. 2026 survey</h3>
+    <p class="note">Survey: <a href="https://www.preprints.org/manuscript/202607.2303">preprint</a>, DOI 10.20944/preprints202607.2303.v1 — not peer-reviewed; preprints.org page bot-blocked, verified via DOI and MCML page. All below have public code; none in the earlier lists.</p>
+    <ul>
+      <li><a href="https://github.com/THU-ESIS/JiuZhou">JiuZhou</a> — geoscience LLM (Mistral-7B, two-stage pre-adaptation), open weights.</li>
+      <li><a href="https://huggingface.co/nn-tech/MetalGPT-1">MetalGPT-1</a> — Nornickel 32B metallurgy/mining LLM (Qwen3-32B base), open weights (cc-by-nc-sa-4.0).</li>
+      <li><a href="https://github.com/microsoft/PEACE">PEACE / GeoMap-Agent</a> — MLLM for geologic-map understanding (CVPR 2025), MIT, code + GeoMap-Bench dataset.</li>
+      <li><a href="https://github.com/Saeid1986/DAN-GRF">DAN-GRF</a> — deep autoencoder + geographical random forest for geochemical anomaly detection (R).</li>
+      <li><a href="https://github.com/NRCan/geoscience_language_models">NRCan geoscience language models</a> — GloVe + BERT retrained on geoscience text (MIT); the base of the Parsa et al. embedding pipeline.</li>
+    </ul>
+    <p>Also named by the survey but <strong>no public code</strong>: GFM4MPM (arXiv:2406.12756, SRI; US patent app 18/980,409 only).</p>
+  </div>
+</details>
+
+<details>
+  <summary>Interpretation C — literally n-D/4D+ spatial simulation: thin, mostly 3D+uncertainty</summary>
+  <div class="body">
+    <div class="exec">
+      One genuine n-D tool exists: <strong>G2S</strong> (QuickSampling MPS, "1D, 2D, 3D, nD"). Everything else is 3D + uncertainty ensembles (GemPy, LoopStructural) or 4D visualization. No public 4D+ cell-based geological simulator was found. pyKriging is dimension-agnostic but a general surrogate toolkit — excluded. USGS mineral-prospectivity code does not exist (org archived Sep 2026).
+    </div>
+    <ul>
+      <li><a href="https://github.com/IFuentesSR/GeoVectoLitho">GeoVectoLitho</a> — the one genuine dimensionality-lift (text → 3D voxel stratigraphy) with public code.</li>
+      <li><a href="https://github.com/GAIA-UNIL/G2S">G2S</a> — QuickSampling multiple-point statistics stochastic simulation, "developed without restrictions regarding the dimensionality of the data (e.g. 1D, 2D, 3D, nD)" (Gravey &amp; Mariethoz 2020, <a href="https://doi.org/10.5194/gmd-13-2611-2020">GMD 13:2611</a>). The one verified genuinely n-D geoscience simulation tool. <span class="tag c">C</span> GPL-3.0, actively maintained (GAIA lab, UNIL + IGF).</li>
+      <li><a href="https://github.com/gempy-project/gempy">GemPy</a> and <a href="https://github.com/Loop3D/LoopStructural">LoopStructural</a> — implicit 3D modeling with Bayesian/stochastic ensembles (3D + uncertainty dimensions, not true 4D+).</li>
+      <li><a href="https://github.com/ofbodur/Joint-4D-Visualisation-and-Analysis-of-Geodynamic-Models-and-Geological-Data">Joint 4D Visualisation of Geodynamic Models</a> — 4D (space+time) geodynamic visualization.</li>
+      <li>No public 4D+ cell-based geological simulator was found; interpretation C remains a paper curiosity.</li>
+    </ul>
+    <h3>Loose-end rulings on interpretation C (follow-up pass)</h3>
+    <ul>
+      <li><strong>pyKriging</strong> (<a href="https://github.com/capaulson/pyKriging">repo</a>, 390★, MIT, active) — dimension-agnostic but a <strong>general surrogate-modelling/GP toolkit for expensive-function optimization</strong>, not a geoscience tool. Excluded from C. The geoscience kriging tool is a different project: GeoStat-Framework/PyKrige (2D/3D).</li>
+      <li><strong>USGS mineral-prospectivity code: does not exist.</strong> The <code>usgs</code> GitHub org was archived Sep 2026; org searches for "prospectivity" and "mineral" return 0 repos. USGS publishes prospectivity <strong>models as data</strong> (tri-national Critical Minerals Mapping Initiative gradient-boosting GeoTIFF grids, <a href="https://doi.org/10.5066/P970GDD5">doi</a>), with AI assessment work done externally (DARPA CriticalMAAS). Nearest open-government equivalents: <a href="https://github.com/GeoscienceAustralia/MPM-WofE">GeoscienceAustralia/MPM-WofE</a> (R, Apache-2.0) and <a href="https://github.com/GeoscienceAustralia/minpot-toolkit">GeoscienceAustralia/minpot-toolkit</a> (archived Oct 2025).</li>
+    </ul>
+  </div>
+</details>
+
+<details>
+  <summary>Petrology deep dive — PhaseCast review (Sonnet 5.5)</summary>
+  <div class="body">
+    <div class="exec">
+      PhaseCast is the <strong>only</strong> latent-space petrology model found: a small (3.2M-param, 256-d) transformer pretrained on 788k whole-rock compositions, with heads trained on ~950k MAGEMin-simulated labels. "Zero-shot" is a narrow claim (no measured mineralogy in head training), the only baseline is internal, and — as of 2026-11-25 — the code is <strong>released</strong> (MIT, checkpoints included), superseding the scan's paper-only status. Petrology stays thin-to-moderate, leaning thin. Thermobar and MIN-ML are confirmed classical-ML.
+    </div>
+    <p>Reviewed by a dedicated Sonnet 5.5 subagent, 2026-11-25. All URLs fetch-verified (5/5 HTTP 200).</p>
+    <p><strong>Classification: Interpretation B.</strong> PhaseCast is a latent-space ML model — a pretrained transformer encoder with learned heads. It involves no hypervector algebra (not A), and its input is a flat vector of oxides and trace elements with no spatial or n-D structure (not C).</p>
+    <p><strong>Paper:</strong> "Simulated petrological labels enable probabilistic mineralogy prediction from whole-rock geochemistry" (Liu, Kaplan, Whittaker, Persson; LBNL; <a href="https://arxiv.org/abs/2610.36429">arXiv:2610.36429</a>, v2 of 30 Oct 2026). NeurIPS 2026 Sim2Science workshop poster (<a href="https://openreview.net/forum?id=XH2fnz0Enx">OpenReview</a>).</p>
+    <h3>Architecture and dimensionality</h3>
+    <ul>
+      <li><strong>Encoder:</strong> an adapted CrabNet. "Each element is one token; self-attention across tokens and a masked mean pool yield one latent vector per rock."</li>
+      <li><strong>Size:</strong> d_model = 256 ("Dimensionality of latent representation"), 4 layers, 8 heads; 3,234,699 trainable parameters — a small model.</li>
+      <li><strong>Element embeddings:</strong> a 121×200 table initialised from the published 200-dimensional mat2vec embeddings, left trainable.</li>
+      <li><strong>Input:</strong> 9 major and 13 trace elements plus an Fe3+/total-Fe row — a 23-token sequence.</li>
+      <li><strong>Pretraining:</strong> masked-element modeling on 787,721 measured whole-rock compositions (Gard et al. 2019 global compilation). Median log-space R² of 0.89 (major) and 0.84 (trace) when imputing a hidden element from the frozen latent.</li>
+      <li><strong>Heads (MLPs on the frozen latent):</strong> a Bernoulli presence factor over 21 phases × a Dirichlet abundance factor (assemblage head); a per-mineral oxide composition head; a P/T/water conditions head. Recalibration is an affine map on presence logits plus multiplicative rescaling of Dirichlet concentrations.</li>
+    </ul>
+    <p>The high-dimensional element is modest: a 256-d latent and a 2<sup>21</sup> assemblage space.</p>
+    <h3>Simulated-label pipeline</h3>
+    <ul>
+      <li><strong>Engine:</strong> MAGEMin, a Gibbs-energy minimizer, run unmodified through its Julia interface — not MELTS, Perple_X, or Thermo-Calc (cited only as alternatives). The paper notes MAGEMin is "fast enough to sweep candidate conditions."</li>
+      <li><strong>Compositions:</strong> 9,946 held-out measured volcanic compositions (SiO2 ≤ 80 wt%, MgO ≤ 18 wt%, foidites excluded).</li>
+      <li><strong>Draws:</strong> 48 sampled (pressure, dissolved-water) draws per composition, each cooled 1200 → 600 °C in 20 °C steps.</li>
+      <li><strong>Labels:</strong> assemblage recorded at 50 and 30 wt% residual melt, melt/fluid removed, solids renormalised — about 950k labels. Cost: ~62 h CPU on an M4 Max for the training split.</li>
+    </ul>
+    <h3>Zero-shot claims and baselines</h3>
+    <ul>
+      <li><strong>Benchmark:</strong> 640 USGS volcanic rocks (Bodie Hills; Tonopah/Divide/Goldfield), 7 mineral categories, splits 368/111/161.</li>
+      <li><strong>Presence discrimination:</strong> AUROC 0.575–0.870 across categories (amphibole lowest; no median stated).</li>
+      <li><strong>Abundance:</strong> Spearman positive in 6 of 7 categories; zero-shot abundance error 11.0% → 9.5% recalibrated.</li>
+      <li><strong>Joint NLL:</strong> validation 13.4 → 0.97 nats with the full fitting set; a 25-rock fit gives 3.97 nats (76% of the reduction). Test set: 9.36 → 1.58 nats with a 25-rock fit.</li>
+      <li><strong>Baseline:</strong> internal only — the same head on the pretrained latent beats the head on raw geochemistry by 0.50–0.67 nats. The paper's own limitations section says "no external method is evaluated." Caveats: absolute errors are teacher-forced; the benchmark records phenocryst modes while labels are equilibrium solids; the abundance factor appears learned from minerals present rather than chemistry.</li>
+      <li><strong>"Zero-shot" is a narrow claim:</strong> it means "no measured mineralogy used in head training" — not a claim to beat norm calculators or other methods.</li>
+    </ul>
+    <h3>Code status as of 2026-11-25: RELEASED</h3>
+    <p>Supersedes the scan's "paper-only" status. The code is at <a href="https://github.com/matthew-j-liu/phasecast">github.com/matthew-j-liu/phasecast</a> (MIT, created 2026-05-13, last push 2026-11-06, 8 stars), with a linked Zenodo DOI (10.5281/zenodo.23992950). The repo includes checkpoints, configs, src, tests, and MAGEMin scripts. The <code>submission</code> branch reproduces the paper; <code>main</code> holds later work whose results differ.</p>
+    <h3>Other petrology high-dimensional work: none beyond PhaseCast</h3>
+    <p>Empty searches: "foundation model OR self-supervised embedding mineral chemistry OR petrology OR thermobarometry transformer 2026"; "arXiv 2026 pretrained transformer whole-rock geochemistry embeddings petrology masked element modeling". Adjacent items that surfaced (neither is petrology geochemistry): <a href="https://doi.org/10.1016/j.acags.2025.100314">PetroMind</a> (imagery-only, verified in loose-ends pass), <a href="https://link.springer.com/article/10.1007/s11053-025-10564-0">Parsa et al.</a> (exploration), and the <a href="https://www.preprints.org/manuscript/202607.2303">Taghipour survey</a>.</p>
+    <h3>Thermobar / MIN-ML classification</h3>
+    <ul>
+      <li><a href="https://github.com/PennyWieser/Thermobar">Thermobar</a> — <strong>classical.</strong> Calibrated thermobarometry/hygrometry equations; its ML thermobarometers use Petrelli's tree-based regressors (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9285709/">PMC9285709</a>). No latent or embedding component.</li>
+      <li><a href="https://ui.adsabs.harvard.edu/abs/2023EGUGA..2513612S/abstract">MIN-ML</a> — <strong>classical.</strong> Supervised classifier of igneous minerals from oxide data, no learned representation.</li>
+    </ul>
+    <div class="verdict"><strong>Verdict on petrology density:</strong> stays <strong>thin-to-moderate, leaning thin.</strong> PhaseCast is the only latent-space petrology model found (one 3.2M-parameter, 256-d, workshop-level paper) with no external baseline. Only its code-availability status changes: paper-only → MIT-licensed code and checkpoints released.</div>
+  </div>
+</details>
+
+<h2>Per-domain coverage</h2>
+<div class="exec">
+  Economic geology / MPM is the <strong>densest</strong> domain (8+ verified projects). Geostratigraphy is the <strong>thinnest</strong> — one strong public-code effort (GeoVectoLitho) — making it the clearest open niche. Petrology has exactly one latent-space model plus one imagery-only foundation model.
+</div>
+<table>
+  <tr><th>Domain</th><th>Density</th><th>Best public artifacts</th></tr>
+  <tr><td>Economic geology / MPM</td><td><strong>Densest</strong><div class="coverage-bar" style="--pct: 90%"></div></td><td>AlphaEarth-prospectivity, GeoMinLM, DeepAndes, OpenGADBench, DEEP-SEAM, Parsa et al., Geo-Hgan, causal-VAE</td></tr>
+  <tr><td>Geochemistry</td><td>Dense<div class="coverage-bar" style="--pct: 70%"></div></td><td>GeoChemAD/GeoChemFormer, MAX, graph-SSL, DAN-GRF, pyrolite (classical CoDA)</td></tr>
+  <tr><td>Mining exploration</td><td>Dense (shared with MPM)<div class="coverage-bar" style="--pct: 70%"></div></td><td>DeepAndes, geopredict, critical-mineral-ml, JiuZhou, MetalGPT-1, PEACE</td></tr>
+  <tr><td>Petrology</td><td>Thin–moderate, leaning thin<div class="coverage-bar" style="--pct: 30%"></div></td><td>PhaseCast (code released, MIT); PetroMind (imagery-only); Thermobar/MIN-ML are classical-ML</td></tr>
+  <tr><td>Geostratigraphy</td><td><strong>Thinnest</strong><div class="coverage-bar" style="--pct: 15%"></div></td><td>GeoVectoLitho (the one strong public-code effort)</td></tr>
+</table>
+
+<h2>Flagships</h2>
+<ol>
+  <li><strong><a href="https://github.com/yihaoding/geochemad">GeoChemAD / OpenGADBench</a></strong> — first open multi-region geochemical anomaly benchmark + self-supervised transformer; directly attacks the field's private-data reproducibility crisis.</li>
+  <li><strong><a href="https://github.com/geobrain-ai/geogalactica">GeoGalactica</a> + <a href="https://github.com/davendw49/k2">K2</a></strong> — the two named open geoscience foundation LLMs that the exploration-LLM line (GeoMinLM etc.) builds on.</li>
+  <li><strong><a href="https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/">AlphaEarth Foundations</a></strong> — the highest-profile embedding model actually applied to mineral prospectivity at industrial scale.</li>
+</ol>
+
+<details>
+  <summary>Checks &amp; audit trail</summary>
+  <div class="body">
+    <ul>
+      <li>Worker checks: 3/3 PASS (URL-per-entry, URL count ≥ project count, ≥2 fetch-verified each)</li>
+      <li>Centralized compile check: 10/10 key URLs spot-verified HTTP 200</li>
+      <li>Petrology deep dive (Sonnet 5.5): 5/5 URLs fetch-verified; 3 predictions logged (1 hit, 2 misses — code-release miss corrected the report)</li>
+      <li>Loose-ends pass (2 workers): all checks PASS (10 distinct URLs verified by glm-literature; 3 primary URLs verified by ds-skeptic, with preprints.org bot-blocked at 403 and existence confirmed via DOI/MCML); 4 predictions logged (3 hits, 1 miss)</li>
+      <li>Predictions logged: 18 total across the run → ledger at <code>~/Documents/repos/abdopus-cpi/ledger/octopus-ledger.jsonl</code></li>
+      <li>Gate: no director review needed at any pass (full agreement, all checks green); director's independent findings fully consistent with worker reports</li>
+    </ul>
+  </div>
+</details>
+
+<h2>Bottom line</h2>
+<div class="headline">
+  If "hyper-dimensional models" means HDC/VSA — the field is <strong>empty</strong>, and the adjacent HDC work (hyperspectral, wildfire, DoA) plus the mislabel/paper-mill noise explains every hit. If it means high-dimensional latent ML — the field is <strong>active and consolidating around foundation models</strong>, with mineral prospectivity the densest domain and geostratigraphy the clearest open niche.
+</div>
+
+<footer>
+  Lithos research project · abdopus hd-geoscience-scan · compiled 2026-11-25 · source: <a href="hd-geoscience-scan-2026-11-25.md">hd-geoscience-scan-2026-11-25.md</a>
+</footer>
+
+</div>
+</body>
+</html>
