@@ -15,4 +15,4 @@ Study geology as a research domain: build up findings, synthesize them into repo
 
 ## Status
 
-Scaffolded 2026-11-25. Research has NOT started — no analysis, no essays yet.
+- 2026-11-25 — First report: `reports/hd-geoscience-scan-2026-11-25.md` (abdopus multi-agent scan of hyper-dimensional models across geochemistry, economic geology, geostratigraphy, petrology, mining exploration). Petrology/PhaseCast deep-dive section in progress.
