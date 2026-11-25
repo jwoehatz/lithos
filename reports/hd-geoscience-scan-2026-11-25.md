@@ -1,6 +1,6 @@
 # Public projects leveraging hyper-dimensional models in geochemistry, economic geology, geostratigraphy, petrology, and mining exploration
 
-**Run:** abdopus `hd-geoscience-scan` · 2026-11-25 · 4 agents (3 workers + director), 1 wave, 0 escalations · gate: d≈0.05 < tau=0.3, all deterministic checks passed → director review skipped · 11/11 predictions hit · 10/10 spot-checked URLs live
+**Run:** abdopus `hd-geoscience-scan` · 2026-11-25 · 4 agents (3 workers + director), 1 wave, 0 escalations · gate: d≈0.05 < tau=0.3, all deterministic checks passed → director review skipped · 11/11 predictions hit · 10/10 spot-checked URLs live · follow-up passes: Sonnet 5.5 petrology deep dive + 2-worker loose-ends verification (all checks passed)
 
 **Headline finding:** Across three interpretations of "hyper-dimensional," **zero public projects apply true Hyperdimensional Computing / Vector-Symbolic Architectures (HDC/VSA) to any of the five domains.** The real activity is in high-dimensional latent-space ML (embeddings, foundation models), which is dense and growing fast.
 
@@ -44,12 +44,36 @@ All four agents independently converged on zero. The exact-match searches are th
 
 GitHub sweep additions (B-tagged): [craton](https://github.com/AhmedHeshamEG/craton) (solid-Earth foundation model), [GEM](https://github.com/douyimin/GEM) ("Geological Everything Model 3D"), [cross-domain-seismic-fm](https://github.com/jqfzfb/cross-domain-seismic-fm), [geopredict-geological-prospectivity](https://github.com/ukpaiuj2014-commits/geopredict-geological-prospectivity), [critical-mineral-ml-canadian-shield](https://github.com/Makkoran/critical-mineral-ml-canadian-shield), plus the curated [mineral-exploration-machine-learning](https://github.com/RichardScottOZ/mineral-exploration-machine-learning) list.
 
+Verified loose ends (follow-up pass, all primary-source verified):
+
+- [Geo-Hgan](https://github.com/cbn001012/Geo-Hgan-Unsupervised-anomaly-detection-in-geochemical-data-via-latent-space-learning) — autoencoder + latent-space GAN for unsupervised geochemical anomaly detection (Ding et al., *Computers & Geosciences* 192:105703, 2024, [doi](https://doi.org/10.1016/j.cageo.2024.105703); 85% AUROC). **B**, economic geology, Apache-2.0, live.
+- [Causal-VAE geochemical anomalies](https://www.sciencedirect.com/science/article/pii/S0098300425002407) — Ni & Xiong, interpretable causal VAE (SCM DAG over ore-controlling factors, counterfactual reasoning; 39-dim input → 117-dim latent; Nanling case study), *C&G* 208:106090, Feb 2026, [doi](https://doi.org/10.1016/j.cageo.2025.106090). **B**, code [live](https://github.com/kiritonfan/An-interpretable-causal-variational-autoencoder) (MIT).
+- [DEEP-SEAM](https://gmd.copernicus.org/articles/19/2593/2026) — explainable semi-supervised deep learning (DevNet) for REE prospectivity, Northern Curnamona Province, South Australia; 57 multi-source features, SHAP interpretability (Luo et al., *GMD* 19:2593–2625, 2026; preprint [EGUsphere-2025-3283](https://doi.org/10.5194/egusphere-2025-3283)). **B**, code on [Zenodo](https://doi.org/10.5281/zenodo.17098677) + [github.com/EarthByte/MPM_Curnamona_REE](https://github.com/EarthByte/MPM_Curnamona_REE) (GPL-3.0).
+- [PetroMind](https://github.com/connamulder/PetroMind) — multimodal petrographic foundation model built on Qwen2.5-VL (LoRA adapters; rock-image classification ≈97% accuracy, lithological description generation; SA-Rock metric), Chen et al., *Appl. Comput. Geosci.* 29:100314, 2026, [doi](https://doi.org/10.1016/j.acags.2025.100314). **B**, petrology-relevant but **imagery-only** (thin-section photos, no geochemistry), Apache-2.0, live.
+- [Parsa et al. 2026](https://link.springer.com/article/10.1007/s11053-025-10564-0) — fine-tuned BERT (768-d embeddings per H3 cell, 1.8M cells across Canada) + self-supervised transformer over 790 covariates (50-d embeddings) for critical-minerals prospectivity mapping (MVT Zn–Pb), *Nat. Resour. Res.* 35:207–225. **B**, economic geology; no official code, third-party implementation [live](https://github.com/RichardScottOZ/geoscience-transformers-for-predictive-mapping-of-critical-minerals).
+
+Additional projects surfaced via the Taghipour et al. 2026 mineral-exploration foundation-model survey ([preprint](https://www.preprints.org/manuscript/202607.2303), DOI 10.20944/preprints202607.2303.v1 — not peer-reviewed; preprints.org page bot-blocked, verified via DOI and MCML page), all with public code, none in the earlier lists:
+
+- [JiuZhou](https://github.com/THU-ESIS/JiuZhou) — geoscience LLM (Mistral-7B, two-stage pre-adaptation), open weights.
+- [MetalGPT-1](https://huggingface.co/nn-tech/MetalGPT-1) — Nornickel 32B metallurgy/mining LLM (Qwen3-32B base), open weights (cc-by-nc-sa-4.0).
+- [PEACE / GeoMap-Agent](https://github.com/microsoft/PEACE) — MLLM for geologic-map understanding (CVPR 2025), MIT, code + GeoMap-Bench dataset.
+- [DAN-GRF](https://github.com/Saeid1986/DAN-GRF) — deep autoencoder + geographical random forest for geochemical anomaly detection (R).
+- [NRCan geoscience language models](https://github.com/NRCan/geoscience_language_models) — GloVe + BERT retrained on geoscience text (MIT); the base of the Parsa et al. embedding pipeline.
+
+Also named by the survey but **no public code**: GFM4MPM (arXiv:2406.12756, SRI; US patent app 18/980,409 only).
+
 ### Interpretation C — literally n-D/4D+ spatial simulation: thin, mostly 3D+uncertainty
 
 - [GeoVectoLitho](https://github.com/IFuentesSR/GeoVectoLitho) — the one genuine dimensionality-lift (text → 3D voxel stratigraphy) with public code.
+- [G2S](https://github.com/GAIA-UNIL/G2S) — QuickSampling multiple-point statistics stochastic simulation, "developed without restrictions regarding the dimensionality of the data (e.g. 1D, 2D, 3D, nD)" (Gravey & Mariethoz 2020, [GMD 13:2611](https://doi.org/10.5194/gmd-13-2611-2020)). The one verified genuinely n-D geoscience simulation tool. **C**, GPL-3.0, actively maintained (GAIA lab, UNIL + IGF).
 - [GemPy](https://github.com/gempy-project/gempy) and [LoopStructural](https://github.com/Loop3D/LoopStructural) — implicit 3D modeling with Bayesian/stochastic ensembles (3D + uncertainty dimensions, not true 4D+).
 - [Joint 4D Visualisation of Geodynamic Models](https://github.com/ofbodur/Joint-4D-Visualisation-and-Analysis-of-Geodynamic-Models-and-Geological-Data) — 4D (space+time) geodynamic visualization.
 - No public 4D+ cell-based geological simulator was found; interpretation C remains a paper curiosity.
+
+Loose-end rulings on interpretation C (follow-up pass):
+
+- **pyKriging** ([repo](https://github.com/capaulson/pyKriging), 390★, MIT, active) — dimension-agnostic but a **general surrogate-modelling/GP toolkit for expensive-function optimization**, not a geoscience tool. Excluded from C. The geoscience kriging tool is a different project: GeoStat-Framework/PyKrige (2D/3D).
+- **USGS mineral-prospectivity code: does not exist.** The `usgs` GitHub org was archived Sep 2026; org searches for "prospectivity" and "mineral" return 0 repos. USGS publishes prospectivity **models as data** (tri-national Critical Minerals Mapping Initiative gradient-boosting GeoTIFF grids, [doi](https://doi.org/10.5066/P970GDD5)), with AI assessment work done externally (DARPA CriticalMAAS). Nearest open-government equivalents: [GeoscienceAustralia/MPM-WofE](https://github.com/GeoscienceAustralia/MPM-WofE) (R, Apache-2.0) and [GeoscienceAustralia/minpot-toolkit](https://github.com/GeoscienceAustralia/minpot-toolkit) (archived Oct 2025).
 
 ## Petrology deep dive (PhaseCast review)
 
@@ -100,10 +124,10 @@ The high-dimensional element is modest: a 256-d latent and a 2^21 assemblage spa
 
 | Domain | Density | Best public artifacts |
 |---|---|---|
-| Economic geology / MPM | **Densest** | AlphaEarth-prospectivity, GeoMinLM, DeepAndes, OpenGADBench |
-| Geochemistry | Dense | GeoChemAD/GeoChemFormer, MAX, graph-SSL, pyrolite (classical CoDA) |
-| Mining exploration | Dense (shared with MPM) | DeepAndes, geopredict, critical-mineral-ml |
-| Petrology | Thin–moderate, leaning thin | PhaseCast (code released, MIT); Thermobar/MIN-ML are classical-ML |
+| Economic geology / MPM | **Densest** | AlphaEarth-prospectivity, GeoMinLM, DeepAndes, OpenGADBench, DEEP-SEAM, Parsa et al., Geo-Hgan, causal-VAE |
+| Geochemistry | Dense | GeoChemAD/GeoChemFormer, MAX, graph-SSL, DAN-GRF, pyrolite (classical CoDA) |
+| Mining exploration | Dense (shared with MPM) | DeepAndes, geopredict, critical-mineral-ml, JiuZhou, MetalGPT-1, PEACE |
+| Petrology | Thin–moderate, leaning thin | PhaseCast (code released, MIT); PetroMind (imagery-only); Thermobar/MIN-ML are classical-ML |
 | Geostratigraphy | **Thinnest** | GeoVectoLitho (the one strong public-code effort) |
 
 ## Flagships
@@ -116,8 +140,10 @@ The high-dimensional element is modest: a 256-d latent and a 2^21 assemblage spa
 
 - Worker checks: 3/3 PASS (URL-per-entry, URL count ≥ project count, ≥2 fetch-verified each)
 - Centralized compile check: 10/10 key URLs spot-verified HTTP 200
-- Predictions logged: 11/11 hit (2 ds-skeptic, 2 glm-literature, 2 haiku-builder, 5 director) → ledger at `~/Documents/repos/abdopus-cpi/ledger/octopus-ledger.jsonl`
-- Gate: no director review needed (full agreement, all checks green); director's independent findings fully consistent with worker reports
+- Petrology deep dive (Sonnet 5.5): 5/5 URLs fetch-verified; 3 predictions logged (1 hit, 2 misses — code-release miss corrected the report)
+- Loose-ends pass (2 workers): all checks PASS (10 distinct URLs verified by glm-literature; 3 primary URLs verified by ds-skeptic, with preprints.org bot-blocked at 403 and existence confirmed via DOI/MCML); 4 predictions logged (3 hits, 1 miss)
+- Predictions logged: 18 total across the run → ledger at `~/Documents/repos/abdopus-cpi/ledger/octopus-ledger.jsonl`
+- Gate: no director review needed at any pass (full agreement, all checks green); director's independent findings fully consistent with worker reports
 
 ## Bottom line
 
