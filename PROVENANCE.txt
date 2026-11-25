@@ -1,0 +1,2 @@
+Skill library copied from StoryTech (~/Documents/repos/StoryTech/skills) on 2026-11-25.
+Original provenance: see StoryTech PROVENANCE.txt — 8 skill zips downloaded from JessesLab Space (Hatz file_ids recorded there).

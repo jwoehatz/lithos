@@ -1,0 +1,46 @@
+{
+  "version": "2026-11-22",
+  "roles": {
+    "director": { "model": "hatz/anthropic.claude-opus-5-5", "use": "review/ruling only; creative pre-flight assessments" },
+    "middle-manager": { "model": "hatz/zai.glm-5.3", "use": "coarse pass, decompose, dispatch, final compile" },
+    "worker-oneshot": { "model": "hatz/zai.glm-5.3", "use": "single-response research/creative/code" },
+    "worker-multistep": { "model": "hatz/anthropic.claude-haiku-5-5", "use": "multi-step feature or research; nuanced voice/lore" },
+    "worker-mechanical": { "model": "hatz/zai.glm-5.2-fast", "use": "single-file edits, mechanical text sweeps" },
+    "worker-budget-research": { "model": "hatz/deepseek.v4-flash-0731", "use": "research-only fan-out, generic leaf lookups" },
+    "worker-general-deepseek": { "model": "hatz/deepseek.v4-pro-0813", "use": "general worker where a GPT model would otherwise be picked" }
+  },
+  "task_types": {
+    "multistep-feature": { "role": "worker-multistep", "creative": false },
+    "multistep-research": { "role": "worker-multistep", "creative": false },
+    "mechanical-sweep": { "role": "worker-mechanical", "creative": false },
+    "oneshot-research": { "role": "worker-oneshot", "creative": false },
+    "oneshot-code": { "role": "worker-oneshot", "creative": false },
+    "oneshot-creative": { "role": "worker-oneshot", "creative": true },
+    "voice-lore": { "role": "worker-multistep", "creative": true },
+    "naming": { "role": "worker-multistep", "creative": true },
+    "narrative-design": { "role": "worker-multistep", "creative": true },
+    "research-fanout": { "role": "worker-budget-research", "creative": false },
+    "review-ruling": { "role": "director", "creative": false }
+  },
+  "no_role": ["hatz/anthropic.claude-sonnet-5-5", "llama*"],
+  "blocked_by_default": ["GLM 5.3 Flash", "DeepSeek V4.1 Flash"],
+  "fleet": {
+    "Abdopus": "hatz/deepseek.v4-pro-0813",
+    "BosunSmee": "hatz/deepseek.v4-pro-0813",
+    "Huginn": "hatz/deepseek.v4-pro-0813",
+    "JuDe": "hatz/deepseek.v4-pro-0813",
+    "Keel": "hatz/deepseek.v4-pro-0813",
+    "Linbiao": "hatz/deepseek.v4-pro-0813",
+    "Mammon": "hatz/deepseek.v4-pro-0813",
+    "Muninn": "hatz/deepseek.v4-pro-0813",
+    "Subutai": "hatz/deepseek.v4-pro-0813",
+    "Suyu": "hatz/deepseek.v4-pro-0813",
+    "WoeClaw": "hatz/deepseek.v4-pro-0813",
+    "WoeClaws": "hatz/deepseek.v4-pro-0813",
+    "DbResearch": "hatz/deepseek.v4-flash-0731",
+    "IntercomReader": "hatz/deepseek.v4-flash-0731",
+    "Jianghu": "hatz/deepseek.v4-flash-0731",
+    "Renmin": "hatz/deepseek.v4-flash-0731",
+    "StripeReader": "hatz/deepseek.v4-flash-0731"
+  }
+}

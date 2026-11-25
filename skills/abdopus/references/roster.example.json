@@ -1,0 +1,97 @@
+{
+  "schema": "abdopus-roster/v1",
+  "note": "EXAMPLE ONLY. Copy to abdopus-roster.json beside octopus-ledger.jsonl and edit there. Model IDs are the Hatz snapshot from SKILL.md (Nov 2026). Re-check before use.",
+  "director": {
+    "id": "director",
+    "version": 1,
+    "role": "director",
+    "model_family": "anthropic",
+    "model": "hatz/anthropic.claude-opus-5-5",
+    "lens": "director",
+    "temperature": 0.2,
+    "tools": ["read", "grep", "glob"],
+    "task_types": ["research", "design", "review", "code", "sweep"],
+    "bid_pool": false,
+    "note": "Outside the bid pool. Bids only when no cheap bid clears the minimum score (0.25)."
+  },
+  "workers": [
+    {
+      "id": "ds-skeptic",
+      "version": 1,
+      "role": "worker",
+      "model_family": "deepseek",
+      "model": "hatz/deepseek.v4-flash-0731",
+      "lens": "skeptic",
+      "temperature": 0.3,
+      "tools": ["read", "grep", "glob", "bash"],
+      "task_types": ["research", "review"],
+      "bid_pool": true,
+      "cost_tier": "low"
+    },
+    {
+      "id": "ds-builder",
+      "version": 1,
+      "role": "worker",
+      "model_family": "deepseek",
+      "model": "hatz/deepseek.v4-pro-0813",
+      "lens": "builder",
+      "temperature": 0.2,
+      "tools": ["read", "grep", "glob", "edit", "bash"],
+      "task_types": ["code", "design", "sweep"],
+      "bid_pool": true,
+      "cost_tier": "mid"
+    },
+    {
+      "id": "glm-literature",
+      "version": 1,
+      "role": "worker",
+      "model_family": "zai",
+      "model": "hatz/zai.glm-5.3",
+      "lens": "literature-first",
+      "temperature": 0.3,
+      "tools": ["read", "grep", "webfetch"],
+      "task_types": ["research", "design"],
+      "bid_pool": true,
+      "cost_tier": "mid"
+    },
+    {
+      "id": "glm-cost",
+      "version": 1,
+      "role": "worker",
+      "model_family": "zai",
+      "model": "hatz/zai.glm-5.2-fast",
+      "lens": "cost-hawk",
+      "temperature": 0.1,
+      "tools": ["read", "grep", "glob", "bash"],
+      "task_types": ["sweep", "review"],
+      "bid_pool": true,
+      "cost_tier": "low"
+    },
+    {
+      "id": "haiku-user",
+      "version": 1,
+      "role": "worker",
+      "model_family": "anthropic",
+      "model": "hatz/anthropic.claude-haiku-5-5",
+      "lens": "user-advocate",
+      "temperature": 0.4,
+      "tools": ["read", "grep", "glob"],
+      "task_types": ["design", "review"],
+      "bid_pool": true,
+      "cost_tier": "low"
+    },
+    {
+      "id": "haiku-builder",
+      "version": 1,
+      "role": "worker",
+      "model_family": "anthropic",
+      "model": "hatz/anthropic.claude-haiku-5-5",
+      "lens": "builder",
+      "temperature": 0.2,
+      "tools": ["read", "grep", "glob", "edit", "bash"],
+      "task_types": ["code", "sweep"],
+      "bid_pool": true,
+      "cost_tier": "low"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "evals": [
+    {
+      "prompt": "Research three competitors of a mid-size MSP and give me a Word report with a comparison chart and a spreadsheet of the numbers.",
+      "expectations": [
+        "The output folder ends with exactly two files: one .docx and one .xlsx.",
+        "The chart is embedded in the .docx; no .png or other image file is left in the output folder.",
+        "Research notes and sources appear as an appendix or section of the .docx, not as separate files.",
+        "The closing note names both files and what each contains."
+      ]
+    },
+    {
+      "prompt": "I attached 30 support ticket exports as text files in two messages. Summarize the recurring themes in one document.",
+      "expectations": [
+        "The ticket files are packed into one or more bundles of at most about 60 KB in a scratch folder, not the output folder.",
+        "The bundles are read by manifest line range or read_section.py, not printed whole.",
+        "The output folder ends with exactly one document."
+      ]
+    },
+    {
+      "prompt": "Update the Q3 summary deck with the new numbers I pasted.",
+      "expectations": [
+        "The existing deck is edited and saved under the same filename.",
+        "No file named with _v2, final or copy is created."
+      ]
+    }
+  ]
+}
