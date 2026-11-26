@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+*.pyc
+# vendored third-party repo clone with bundled 152MB GSWA data — not project work
+data/nure-ct/geochemad/
+# raw portal dumps kept locally for provenance only
+data/nure-ct/ct_query_raw.html
+data/nure-ct/ct_nuresed_download

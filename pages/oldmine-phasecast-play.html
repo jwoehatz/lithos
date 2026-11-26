@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Old Mine Park × PhaseCast — the local play, in practice</title>
+<style>
+  :root {
+    --sp-measure: 68ch;
+  }
+  body { padding: 2.5rem 1.25rem 5rem; margin: 0 auto; max-width: var(--sp-measure); }
+  header h1 { font-size: 1.9rem; line-height: 1.2; margin-bottom: 0.25rem; }
+  .kicker { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; color: var(--sp-muted); margin: 0 0 0.5rem; }
+  .verdict {
+    border-left: 3px solid var(--sp-accent);
+    padding: 0.75rem 1rem;
+    margin: 1.5rem 0;
+    background: var(--sp-surface);
+    border-radius: 0 var(--sp-radius) var(--sp-radius) 0;
+  }
+  .verdict p:first-child { margin-top: 0; }
+  .verdict p:last-child { margin-bottom: 0; }
+  nav ol { padding-left: 1.2rem; margin: 0.75rem 0 2rem; }
+  nav li { margin: 0.15rem 0; }
+  h2 { margin-top: 2.75rem; border-bottom: 1px solid var(--sp-border); padding-bottom: 0.3rem; }
+  h3 { margin-top: 1.75rem; }
+  section > p:first-of-type { margin-top: 0.5rem; }
+  .callout {
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius);
+    padding: 0.75rem 1rem;
+    margin: 1.25rem 0;
+  }
+  .callout.warn { border-left: 3px solid var(--sp-accent); }
+  .callout p:first-child { margin-top: 0; }
+  .callout p:last-child { margin-bottom: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; }
+  th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--sp-border); vertical-align: top; }
+  th { color: var(--sp-muted); font-size: 0.85rem; }
+  .tablewrap { overflow-x: auto; }
+  code { font-size: 0.9em; }
+  .ev { font-size: 0.78rem; color: var(--sp-muted); }
+  ol.protocol { padding-left: 1.4rem; }
+  ol.protocol li { margin: 0.6rem 0; }
+  .sources { font-size: 0.85rem; }
+  .sources ul { padding-left: 1.1rem; }
+  .sources li { margin: 0.2rem 0; word-break: break-all; }
+  .flow {
+    font-family: var(--sp-font-mono);
+    font-size: 0.85rem;
+    background: var(--sp-code-bg);
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--sp-radius);
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  figure { margin: 1.5rem 0; }
+  figcaption { font-size: 0.8rem; color: var(--sp-muted); margin-top: 0.4rem; }
+</style>
+</head>
+<body class="auto">
+<main>
+<header>
+  <p class="kicker">Lithos · Old Mine Park, Trumbull CT · 2026-11-25 research, compiled 2026-11-26</p>
+  <h1>Running PhaseCast on my local rocks</h1>
+  <p>A practical guide to the only latent-space mineralogy model in existence — what it eats, what it can and cannot see, where local geochemistry actually comes from, and the theory behind the one rule that governs every run: <strong>never read its output as the mineralogy of the rock in your hand.</strong></p>
+</header>
+
+<div class="verdict">
+<p><strong>Verdict.</strong> PhaseCast is runnable today on a laptop, in about 15 milliseconds per rock, with no Julia and no GPU. But its mineralogy predictions were trained on volcanic rocks only, and the rocks at Old Mine Park are metamorphic and metasomatic. So every local run is read one way: as a <em>hypothesis about the protolith</em> — the igneous rock these rocks used to be — never as a description of what they are now. The model cannot see scheelite at all, and has never been benchmarked on garnet or epidote.</p>
+</div>
+
+<nav>
+<h2>Contents</h2>
+<ol>
+  <li><a href="#contract">What PhaseCast eats: the input contract</a></li>
+  <li><a href="#run">How to actually run it</a></li>
+  <li><a href="#limits">What it can and cannot see</a></li>
+  <li><a href="#theory">The theory: the igneous equivalent of a protolith</a></li>
+  <li><a href="#data">Local data: what exists and what doesn't</a></li>
+  <li><a href="#stack">The tool stack</a></li>
+  <li><a href="#protocol">The protocol for every run</a></li>
+</ol>
+</nav>
+
+<h2 id="contract">1. What PhaseCast eats: the input contract</h2>
+
+<p>PhaseCast takes a whole-rock geochemical analysis — the kind a commercial lab prints on a certificate — and returns a probability distribution over mineralogy and formation conditions. Getting numbers in the door is the part people get wrong, so the contract comes first.</p>
+
+<p><strong>The elements it knows, verbatim from the tokenizer</strong> <span class="ev">(source: <code>src/cnmineral/data/tokens.py</code>, fetched 2026-11-25)</span>:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Group</th><th>Elements</th><th>How they enter</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Majors (9)</strong></td><td>Si, Al, Ca, Mg, Fe, K, Na, Ti, Cr</td><td>As oxide weight percent: <code>sio2 al2o3 cao mgo k2o na2o tio2</code> plus one of <code>feo</code>+<code>fe2o3</code> / <code>feo_tot</code> / <code>fe2o3_tot</code></td></tr>
+    <tr><td><strong>Traces (13)</strong></td><td>Sr, Zr, Ba, Y, Rb, Ni, Nb, V, La, Ce, Nd, Yb, Th</td><td>As ppm, one column each named <code>&lt;sym&gt;_ppm</code></td></tr>
+    <tr><td><strong>Redox (optional)</strong></td><td>Fe³⁺/total-Fe ratio</td><td>Only where a measured <code>feo</code>+<code>fe2o3</code> pair exists</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>The rules that matter, in practical language:</strong></p>
+
+<ul>
+  <li><strong>Column names are lowercase oxides.</strong> <code>sio2</code>, not <code>SiO2</code>. The parser is case-sensitive and unforgiving.</li>
+  <li><strong>A blank and a zero mean the same thing: "not measured."</strong> This is the single most important rule. If your lab reports tungsten as "&lt;50 ppm", you leave the cell <em>blank</em>. Zero-filling a below-detection value tells the model a confident lie: it converts "we couldn't see it" into "we measured it and it isn't there."</li>
+  <li><strong>Never renormalize to 100%.</strong> Every geochemist's reflex is to close a composition to 100 wt%. Here it corrupts the input. The model wants the analysis exactly as the lab printed it. If the majors total 91% because the rock has 9% volatiles, that's information, not an error.</li>
+  <li><strong>MnO, P₂O₅, LOI and totals are ignored.</strong> Don't bother cleaning them up.</li>
+  <li><strong>The input checker</strong> (<code>check_input</code>) hard-rejects fewer than 4 measured elements, any oxide outside 0–100, or any trace outside 0–1e6 ppm. It warns on a missing major or a majors total outside 85–103 wt%. Warnings are fine; errors stop the run.</li>
+</ul>
+
+<div class="callout">
+<p><strong>Practical shortcut:</strong> the tutorial ships a parser for ALS and Actlabs certificate exports. If your data comes from either lab, the bridge from PDF certificate to model-ready CSV already exists.</p>
+</div>
+
+<h2 id="run">2. How to actually run it</h2>
+
+<p>No installation ceremony. The model weights are committed directly in the git repository — not on HuggingFace, not as LFS pointers, real files:</p>
+
+<ul>
+  <li><code>checkpoints/pretrain_allrock_redox_seed0/epoch_best.pt</code> — ~44 MB (encoder, includes optimizer state)</li>
+  <li><code>checkpoints/joint_heads_allrock_tuned_seed0/heads_best.pt</code> — ~7 MB (mineralogy heads)</li>
+</ul>
+
+<p>Clone, load, predict. The run path, verified against the tutorial:</p>
+
+<div class="flow">git clone https://github.com/matthew-j-liu/phasecast<br/># load: JointHeadCheckpoint.load → load_encoder_from_checkpoint → predict(rocks, encoder, heads) → card(record)</div>
+
+<p><strong>Three practical gotchas:</strong></p>
+<ol>
+  <li><strong>Run from the repo root.</strong> The heads checkpoint stores the encoder path relative to the root; run it from elsewhere and the load fails.</li>
+  <li><strong>On macOS, import <code>cnmineral</code> before <code>torch</code>.</strong> Load-order matters.</li>
+  <li><strong>Use the <code>submission</code> branch to reproduce the paper's numbers.</strong> The <code>main</code> branch holds later research and its numbers differ — the README says so explicitly.</li>
+</ol>
+
+<p>Inference needs no Julia and no MAGEMin (those are only for retraining). CPU only, ~15 ms per rock for a 512-sample posterior. The output "card" per rock is a posterior distribution over mineral assemblages and formation conditions — not a single answer, a spread of them with probabilities.</p>
+
+<h2 id="limits">3. What it can and cannot see</h2>
+
+<p>This is where the model's honesty is unusual and worth quoting. The author's own files disclose every weakness below; nothing here is inference.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Capability</th><th>Status</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Encoding any rock composition</td><td><strong>Works.</strong> The encoder was pretrained on 787,721 measured compositions spanning igneous, sedimentary <em>and</em> metamorphic. A skarn analysis is in-distribution at the token level.</td><td class="ev">Zenodo corpus README, verified</td></tr>
+    <tr><td>Mineralogy predictions on volcanic rocks</td><td><strong>Strong.</strong> +10.63 nats over climatology on the volcanic benchmark.</td><td class="ev">repo benchmark tables</td></tr>
+    <tr><td>Mineralogy predictions on plutonic rocks</td><td><strong>Degraded, not collapsed.</strong> Zero-shot scores +2.80 nats (vs +10.63). Per-group AUROC 0.46–0.83 — pyroxene and amphibole roughly coin-flip.</td><td class="ev"><code>plutonic_zero_shot.json</code>, 575 rocks</td></tr>
+    <tr><td>Mineralogy predictions on metamorphic rocks</td><td><strong>Unvalidated.</strong> The author's journal flags a "metamorphic-drift regime" below the wet solidus: no temperature window is both calibrated and subsolidus. A sedimentary-transfer test was net-worse on 605 real XRD rocks.</td><td class="ev"><code>docs/journal.md</code></td></tr>
+    <tr><td>Garnet, epidote, muscovite, sphene</td><td><strong>In the vocabulary, never scored.</strong> These 11 phases sit outside the 7 benchmarked groups. Predictions for them exist but have never been checked against reality.</td><td class="ev"><code>phase_vocab.py</code></td></tr>
+    <tr><td>Scheelite, powellite</td><td><strong>Invisible.</strong> Not in the 21-phase vocabulary at all. The model cannot output them under any input.</td><td class="ev"><code>phase_vocab.py</code></td></tr>
+    <tr><td>External baselines</td><td><strong>None.</strong> The paper states verbatim: "no external method is evaluated." No XGBoost, no CIPW norm, no classical thermobarometry comparison. The author's own issue tracker keeps the baseline task open (#95).</td><td class="ev">arXiv:2610.36429; issue #95</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout warn">
+<p><strong>The trap, stated once and binding:</strong> feed PhaseCast a Trumbull skarn and it will not refuse. It will accept the composition, run cleanly, and hand back a fluent, confident-looking posterior describing an assemblage that never existed in that rock — because the minerals that <em>are</em> there (garnet, epidote, scheelite) are outside what it was ever taught to say. The failure mode is <strong>silent plausibility, not rejection</strong>. This is the unscored prediction on file from the 2026-11-25 run; the skarn run itself has not been executed yet.</p>
+</div>
+
+<h2 id="theory">4. The theory: the igneous equivalent of a protolith</h2>
+
+<p>Every practical rule above flows from one idea. This section is the idea.</p>
+
+<h3>4.1 Metamorphism is (mostly) a closed system</h3>
+
+<p>When a basalt is buried to 28 kilometers and heated past 650 °C — which is exactly what happened to the rocks at Old Mine Park during the Acadian orogeny — its atoms do not leave. Metamorphism is recrystallization, not replacement: the same chemical budget rearranges into new minerals stable at the new pressure and temperature. Basalt's plagioclase and pyroxene reorganize into amphibolite's hornblende and plagioclase. The minerals change; the <em>whole-rock chemistry</em> — the element budget a lab measures when it pulverizes the sample — is inherited essentially unchanged.</p>
+
+<p>The exceptions are the volatile species (H₂O, CO₂), which escape and are measured as loss-on-ignition, and — where hot fluid flows through — the <em>mobile</em> major elements. Hold that thought; it is the hinge of the whole argument.</p>
+
+<h3>4.2 Composition is a fossil</h3>
+
+<p>Because the element budget is inherited, a whole-rock analysis of a metamorphic rock is a chemical fossil of its protolith — the rock it was before metamorphism. This is not a new idea; it is the working principle behind a century of protolith reconstruction. Geochemists run the same discrimination diagrams on amphibolites that they run on basalts (Ti/Zr ratios, Zr/Y, REE patterns) precisely because those numbers survive metamorphism intact. The amphibolite at Old Mine Park still carries, in its bulk chemistry, the memory of the mid-Ordovician seafloor basalt it used to be.</p>
+
+<h3>4.3 What PhaseCast actually computes</h3>
+
+<p>PhaseCast learned a mapping: <em>composition → mineralogy</em>. But it learned that mapping almost entirely from igneous compositions, with mineralogy labels simulated by MAGEMin for volcanic systems. It has no concept of "this rock was metamorphosed." It does not know what a P-T path is. It knows one story: <em>a magma of this composition crystallized, and here is what it became.</em></p>
+
+<p>So when you feed it an amphibolite analysis, the honest reading of its output is:</p>
+
+<div class="callout">
+<p><strong>"If a magma with this whole-rock composition had cooled as an igneous rock, here is the assemblage and the conditions it would have crystallized at."</strong></p>
+<p>That is the <em>hypothetical igneous equivalent of the protolith</em>. It is a statement about the rock's past, reconstructed through the only lens the model owns. It is not, and cannot be, a statement about the hornblende-and-plagioclase rock in your hand.</p>
+</div>
+
+<p>This is why the framing is legitimate rather than a dodge: protolith reconstruction is a real, standard geologic task, and PhaseCast is a fast probabilistic first pass at it. The posterior over mineralogy and formation conditions is a quantitative hypothesis about what the rock was before the Acadian buried it — which is genuinely useful, as long as you remember which question you asked.</p>
+
+<h3>4.4 Where the theory breaks — and it does, locally</h3>
+
+<p><strong>Break one: metasomatism is not metamorphism.</strong> The 4.1 argument assumes a closed system. Skarn formation — the Trumbull scheelite event, tied to the Permian Pinewood Adamellite at 291 ± 4 Ma — is the opposite: hot, silica- and fluorine- and tungsten-rich fluid from the granite surgically replaced a carbonate host. Wholesale chemistry change. A tactite's composition describes no igneous rock that ever existed; it is a metasomatic precipitate. Worse, the elements the fluid moved most (Ca, Si, K, Na) are exactly the mobile majors PhaseCast weights most heavily, while the elements that <em>do</em> survive metasomatism untouched — Ti, Zr, Nb, Y, the REEs — are the traces. Hence the standing rule: <strong>where metasomatism is suspected, interpret through the immobile elements only.</strong> They are the sole witnesses to the protolith; everything else may have been rewritten.</p>
+
+<p><strong>Break two: assemblage depends on history, not just composition.</strong> An igneous rock's minerals are set by crystallization from its own melt. A metamorphic rock's minerals are set by its bulk composition <em>plus</em> its pressure-temperature path <em>plus</em> whatever fluid passed through. Two rocks with identical chemistry and different histories end up with different minerals. PhaseCast knows only one history — crystallization — so even on a perfectly preserved (non-metasomatized) metamorphic composition, its answer is the igneous branch of the tree, not the branch the rock actually took.</p>
+
+<p><strong>Break three: vocabulary blindness.</strong> The model cannot output what it was never taught. Garnet and epidote are in its vocabulary but outside the scored heads — predictions exist but have never been checked against a real mode. Scheelite and powellite are absent entirely. When the true answer is outside the vocabulary, the model does not say "unknown"; it fills the gap with the most plausible in-vocabulary answer. That is the mechanism behind silent plausibility: not a bug, but the structural consequence of a fixed output space.</p>
+
+<p><strong>Break four: the calibration regime.</strong> The author's own journal notes the model's temperature calibration assumes melt-present conditions; below the wet solidus there is no temperature window that is both calibrated and physically consistent. Every metamorphic rock at Old Mine Park lives below that solidus. The "formation conditions" on the output card are the igneous equivalent's conditions, and even then only inside the calibrated regime.</p>
+
+<h3>4.5 Why pair it with MAGEMin</h3>
+
+<p>MAGEMin is the thermodynamic ground truth: a Gibbs-energy minimizer that, given a bulk composition, pressure and temperature, computes the equilibrium assemblage from first principles — including metamorphic databases (Metabasite, Metapelite) that cover exactly the P-T range the Acadian imposed. It was also the label generator for PhaseCast's training data, which makes the pairing natural: <strong>PhaseCast is the student; MAGEMin is the teacher.</strong> The student-vs-teacher comparison — same input, both outputs, where they diverge and why — is playbook item 3, and it is the check that keeps the igneous-equivalent framing honest. Where the student's posterior agrees with the teacher's metamorphic equilibrium, the protolith hypothesis gains ground. Where they diverge, you have located either metasomatism or model failure — and both are findings.</p>
+
+<h2 id="data">5. Local data: what exists and what doesn't</h2>
+
+<p>The hard reality: <strong>no modern whole-rock analysis of the park's rocks is publicly available.</strong> Every query below was exercised with real requests in the 2026-11-25 session.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Source</th><th>Status</th><th>What it actually gives you</th></tr></thead>
+  <tbody>
+    <tr><td><strong>USGS NGDB Rock</strong></td><td>Works</td><td>643 CT records. Closest to the park: BCT198/199/204 at 41.335, −73.189 (a dump/prospect pit), plus BCT196, a tactite with W at 200 ppm. But it's 1970 semi-quantitative 6-column spectrograph data — ~30 traces in ppm, a few majors as wt% — and it <strong>lacks the full major-oxide set PhaseCast requires.</strong></td></tr>
+    <tr><td><strong>NURE stream sediment</strong></td><td>Works</td><td>643 records across all 8 CT counties, W, Th, U and 40+ elements per sample; full-country CSV download. Good for a watershed-scale tungsten-anomaly map — but it's stream sediment, not whole rock. (Follow-up finding: CT NURE W is 95.5% below detection limit, so the map mostly maps the detection limit.)</td></tr>
+    <tr><td><strong>GEOROC</strong></td><td>Search works, <strong>download broken</strong></td><td>Lat/lon box search returns rows, but every download path throws a live server-side SQL error ('80040e37', '80040e14'). Parameter-independent; do not retry. No "Trumbull" or "Connecticut" location exists in its list anyway.</td></tr>
+    <tr><td><strong>PetDB 2.0</strong></td><td>Live</td><td>The right place for regional analogues (Straits Schist amphibolites, Pinewood Adamellite). The old search.earthchem.org is offline. The regional analogue query has been run since: 418 analyses near Trumbull, but all are Early Jurassic CAMP tholeiites — zero target geology. Usable for pipeline validation only.</td></tr>
+    <tr><td><strong>Historical literature</strong></td><td>Fetch-verified</td><td>Shannon 1920 (USNM) and a 1921 <em>American Mineralogist</em> piece on the old tungsten mine — mineralogical descriptions, no bulk geochemistry.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Bottom line:</strong> the only geochemistry at the park itself is sparse 1970s semi-quantitative USGS data that cannot satisfy the input contract. The practical play is regional analogues — well-studied amphibolite and granitoid compositions from PetDB/GEOROC-class sources (the Bronson Hill arc data, 94 samples with full majors + traces, is saved locally as <code>data/BronsonHill_WR_data.csv</code>) — plus NURE sediment for the tungsten context.</p>
+
+<h2 id="stack">6. The tool stack</h2>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Tool</th><th>Verdict</th><th>Practical note</th></tr></thead>
+  <tbody>
+    <tr><td><strong>PhaseCast</strong></td><td>Runnable today</td><td>Clone, checkpoints in git, CPU inference, ~15 ms/rock. MIT license.</td></tr>
+    <tr><td><strong>pyrolite</strong></td><td>Runnable</td><td><code>pip install pyrolite</code> (needs Python ≥3.11). Use for CoDA transforms and discrimination diagrams <em>before</em> PhaseCast — but remember PhaseCast itself wants un-normalized input.</td></tr>
+    <tr><td><strong>MAGEMin</strong></td><td>Runnable, three ways</td><td>Julia (<code>MAGEMin_C.jl</code>), the MAGEMinApp GUI, or the new Python wheel <code>magemin</code> — which <strong>requires Python ≥3.14</strong>. Metabasite and Metapelite databases cover the local P-T range. This is the thermodynamic ground truth.</td></tr>
+    <tr><td><strong>Thermobar</strong></td><td>Runnable but mismatched</td><td>Needs mineral-scale microprobe analyses, not whole-rock. Blocked locally without EPMA data.</td></tr>
+    <tr><td><strong>OpenGADBench / GeoChemAD</strong></td><td>Runnable</td><td>The OOD/anomaly check: is this composition inside the model's trustworthy range? Bundled data, 10 tasks, MIT.</td></tr>
+    <tr><td><strong>GeoGalactica</strong></td><td>Skip</td><td>Dormant artifact, gated weights, documented prompt failures. It contributed the tool-calling <em>idea</em> to the design, never a component.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The pipeline, in one line:</p>
+
+<div class="flow">pyrolite (prep) → PhaseCast (hypothesis) → MAGEMin (ground truth) → OpenGADBench-style OOD check</div>
+
+<h2 id="protocol">7. The protocol for every run</h2>
+
+<ol class="protocol">
+  <li><strong>Feed it the lab certificate as-is.</strong> Lowercase oxides, blanks stay blank, no renormalization, no zero-filling.</li>
+  <li><strong>Read the output as a protolith hypothesis.</strong> The posterior describes the igneous equivalent of the rock's former self — never the rock in hand.</li>
+  <li><strong>Check the hypothesis against MAGEMin</strong> with the appropriate metamorphic database. Student vs. teacher; agreement strengthens the hypothesis, divergence locates metasomatism or model failure.</li>
+  <li><strong>Where metasomatism is suspected — skarn, tactite, any rock the Pinewood fluid touched — trust only the immobile elements:</strong> Ti, Zr, Nb, Y, REE. Everything else may have been rewritten by the fluid.</li>
+  <li><strong>Never ask it about scheelite.</strong> It cannot see it, cannot say it, and will not warn you. Tungsten mineralization lives entirely outside its vocabulary.</li>
+  <li><strong>Run the OOD check</strong> before trusting any posterior: a fluent answer outside the trustworthy range is the most dangerous kind.</li>
+</ol>
+
+<div class="callout">
+<p><strong>One open question on file:</strong> does a modern, certified whole-rock analysis of the Trumbull skarn exist anywhere — private lab archives, a thesis, a state survey bulletin? Everything publicly reachable says no. Finding one would upgrade the entire local play from analogue-based to direct.</p>
+</div>
+
+<h2>Sources</h2>
+
+<p class="ev">All fetch-verified live on 2026-11-25 (webfetch/curl; the websearch tool returned zero results all session). Full list in <code>reports/oldmine-phasecast-play-2026-11-25.md</code>; core sources:</p>
+
+<section class="sources">
+<ul>
+  <li>github.com/matthew-j-liu/phasecast — repo, tutorial, checkpoints (MIT)</li>
+  <li>raw.githubusercontent.com/…/src/cnmineral/data/tokens.py — verbatim element list</li>
+  <li>raw.githubusercontent.com/…/src/cnmineral/data/phase_vocab.py — 21-phase vocab vs 7 scored groups</li>
+  <li>raw.githubusercontent.com/…/explorations/real_mineralogy/…/plutonic_zero_shot.json — measured OOD numbers</li>
+  <li>raw.githubusercontent.com/…/docs/journal.md — metamorphic-drift / sedimentary-transfer notes</li>
+  <li>zenodo.org/records/23992951 — 1.26 GB simulated corpus, CC BY 4.0</li>
+  <li>arxiv.org/abs/2610.36429 — the paper (NeurIPS 2026 Sim2Science)</li>
+  <li>mrdata.usgs.gov/ngdb/rock — CT records incl. BCT196/198/199/204</li>
+  <li>mrdata.usgs.gov/nure/sediment — CT stream-sediment records</li>
+  <li>earthchem.org/petdb — PetDB 2.0 (live); search.earthchem.org (offline)</li>
+  <li>georoc.eu — search works; download endpoints broken server-side (SQL errors '80040e37', '80040e14')</li>
+  <li>doi.org/10.5479/si.00963801.58-2348.469 — Shannon 1920, USNM</li>
+</ul>
+</section>
+
+<p class="ev">Compiled from <code>reports/oldmine-phasecast-play-2026-11-25.md</code> and <code>reports/phasecast-applications-2026-11-25.md</code> (abdopus runs, 2026-11-25). Local geology context: <code>reports/old-mine-park-trumbull-2026-11-25.md</code>. Collecting at Old Mine Park has been suspended since 2016 — all fieldwork is observation only.</p>
+</main>
+</body>
+</html>
