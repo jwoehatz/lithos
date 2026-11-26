@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PhaseCast Self-Correcting Loop — Interim Design (2026-11-26)</title>
+<style>
+  :root { --sp-measure: 68ch; }
+  body { padding: 2.5rem 1.25rem 5rem; margin: 0 auto; max-width: var(--sp-measure); }
+  header h1 { font-size: 1.9rem; line-height: 1.2; margin-bottom: 0.25rem; }
+  .kicker { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; color: var(--sp-muted); margin: 0 0 0.5rem; }
+  .verdict { border-left: 3px solid var(--sp-accent); padding: 0.75rem 1rem; margin: 1.5rem 0; background: var(--sp-surface); border-radius: 0 var(--sp-radius) var(--sp-radius) 0; }
+  .verdict p:first-child { margin-top: 0; } .verdict p:last-child { margin-bottom: 0; }
+  nav ol { padding-left: 1.2rem; margin: 0.75rem 0 2rem; }
+  nav li { margin: 0.15rem 0; }
+  h2 { margin-top: 2.75rem; border-bottom: 1px solid var(--sp-border); padding-bottom: 0.3rem; }
+  h3 { margin-top: 1.75rem; }
+  .callout { background: var(--sp-surface); border: 1px solid var(--sp-border); border-radius: var(--sp-radius); padding: 0.75rem 1rem; margin: 1.25rem 0; }
+  .callout.warn { border-left: 3px solid var(--sp-accent); }
+  .callout p:first-child { margin-top: 0; } .callout p:last-child { margin-bottom: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; }
+  th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--sp-border); vertical-align: top; }
+  th { color: var(--sp-muted); font-size: 0.85rem; }
+  .tablewrap { overflow-x: auto; }
+  code { font-size: 0.9em; }
+  .ev { font-size: 0.78rem; color: var(--sp-muted); }
+  .flow { font-family: var(--sp-font-mono); font-size: 0.85rem; background: var(--sp-code-bg); padding: 0.6rem 0.9rem; border-radius: var(--sp-radius); margin: 1rem 0; overflow-x: auto; }
+  .safe { color: #047857; font-weight: 600; }
+  .poison { color: #b45309; font-weight: 600; }
+  details { background: var(--sp-surface); border: 1px solid var(--sp-border); border-radius: var(--sp-radius); padding: 0.75rem 1rem; margin: 1.25rem 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  details pre { white-space: pre-wrap; font-size: 0.8rem; font-family: var(--sp-font-mono); }
+</style>
+</head>
+<body class="auto">
+<main>
+<header>
+  <p class="kicker">Lithos · abdopus phasecast-self-correcting-loop · 2026-11-26 · interim (run cut short)</p>
+  <h1>A self-correcting loop for PhaseCast projections</h1>
+  <p>Sacrifice fidelity now; buy a durable process that rapidly corrects as its projections are tested. Three of four agents finished before the run was cut short — this is what converged, what rules, and what is still missing.</p>
+</header>
+
+<div class="verdict">
+<p><strong>Verdict (interim, director-anchored).</strong> The loop is buildable this week. All three finishing agents independently arrived at the same skeleton — append-only JSONL prediction register → named tester per projection class → scripted scoring → dated corrections, never silent model edits — and the same top poison family: anything that lets a wrong projection score as right. The director's binding addition, which no worker surfaced: <strong>PhaseCast was trained on MAGEMin-simulated labels, so PhaseCast-vs-MAGEMin agreement is teacher-agreement (distillation fidelity), not accuracy about rocks.</strong> That agreement is cheap, will score high, and will dominate the register unless labelled. The single most dangerous poison risk is reading it as validation.</p>
+</div>
+
+<nav>
+<h2>Contents</h2>
+<ol>
+  <li><a href="#design">The design</a></li>
+  <li><a href="#classes">Projection classes and testers</a></li>
+  <li><a href="#cycle">The first cycle</a></li>
+  <li><a href="#sacrifices">Safe vs poison sacrifices</a></li>
+  <li><a href="#moves">First three moves</a></li>
+  <li><a href="#predictions">Predictions</a></li>
+  <li><a href="#missing">What is missing</a></li>
+</ol>
+</nav>
+
+<h2 id="design">1. The design</h2>
+
+<div class="flow">ENTRY (OOD gate) → PROJECTION (register entry) → TEST (named tester) → SCORE (script) → UPDATE (calibration.json)</div>
+
+<ul>
+  <li><strong>Entry condition:</strong> ≥7 of 9 majors, unrenormalized; provenance tag (<code>analogue:</code> / <code>synthetic:</code> / <code>park:</code>); declared class (<code>protolith-igneous-equivalent</code> vs <code>metamorphic-equilibrium</code>); OOD gate verdict <code>trusted</code> / <code>borderline</code> / <code>untrusted</code> (envelope: SiO₂ ≤ 80, MgO ≤ 18, sum ≥ 90, plus immobile-basaltic ratios). <code>untrusted</code> still runs — stamped hypothetical-only.</li>
+  <li><strong>Register:</strong> append-only <code>register/predictions.jsonl</code>; every entry carries input hash, PhaseCast commit SHA, MAGEMin db version, provenance. Resolutions never edit claims.</li>
+  <li><strong>Update:</strong> <code>calibration.json</code> recomputed from the register, never hand-edited. Corrections are dated rubric or input-rule changes, never silent model changes. No retraining inside the loop.</li>
+</ul>
+
+<h2 id="classes">2. Projection classes and testers</h2>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Class</th><th>Claim</th><th>Tester</th><th>Scoring rule</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A. Mineral assemblage</strong> (igneous equivalent)</td><td>top-1/top-2 group + share (7 scored groups)</td><td>MAGEMin Metabasite (Green 2016) at stated P–T, same input</td><td>top-1 group maps to phase ≥5 vol%; score = 1−|share diff|. <strong>Label: teacher-agreement, NOT accuracy</strong> (director ruling)</td></tr>
+    <tr><td><strong>B. Protolith classification</strong></td><td>basalt … rhyolite</td><td>pyrolite immobile discrimination (Zr/Ti vs Nb/Y; Ti vs V)</td><td>categorical agree/disagree; boundary-within-error = unresolvable, not right. The one scorer independent of the teacher</td></tr>
+    <tr><td><strong>C. Metamorphic assemblage</strong> (MAGEMin at 8 kbar / 650 °C)</td><td>amphibole/plagioclase/garnet presence</td><td><strong>field observation log</strong> (hand lens, photos — no collecting)</td><td>presence/absence Brier; non-observation counts only on a logged fresh inspection</td></tr>
+    <tr><td><strong>D. OOD flag itself</strong></td><td>trust level</td><td>disagreement between A's student and teacher</td><td>AUROC of OOD score vs class-A error — scores whether the model knows when it is wrong</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout">
+<p>Class C is the structural point: field observations test <strong>MAGEMin's</strong> metamorphic claims, never PhaseCast's (binding igneous-equivalent ruling). Garnet/epidote register as NOT SCOREABLE (outside the 7 scored groups); scheelite/powellite are invisible — no projection, ever.</p>
+</div>
+
+<h2 id="cycle">3. The first cycle</h2>
+
+<p>Seven scripts in <code>loop/</code> against <code>data/BronsonHill_WR_data.csv</code>:</p>
+
+<div class="flow">prep_bronsonhill.py (hard-assert no renormalization) → run_phasecast.py (pinned submission commit) → gate.py → project.py → score_magemin.py (Julia MAGEMin_C.jl, 8 kbar/650 °C) → score_immobile.py → score.py</div>
+
+<p><strong>Data correction from this run:</strong> a broad mafic filter yields <strong>12 mafic Waits River samples</strong> (SiO₂ 43.9–52.5, complete immobile suite), not the 8 in prior notes — a filter-definition difference, not a data error. Fe is total-only (<code>Fe2O3→fe2o3_tot</code>); Cr is ppm-only and dropped (contract ignores <code>cr2o3</code>); Rb blank on BF325/HA30 (correct blank encoding).</p>
+
+<h2 id="sacrifices">4. Safe vs poison sacrifices</h2>
+
+<p>The test: after the sacrifice, does a wrong projection still score as wrong? Noise is survivable; a sacrifice that makes wrong look right is fatal.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Sacrifice</th><th>Ruling</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Regional analogues for park rocks</td><td class="safe">SAFE</td><td>if provenance-stamped and never cited as park support</td></tr>
+    <tr><td>Volcanic-only heads on amphibolites</td><td class="safe">SAFE</td><td>if registered as igneous-equivalent</td></tr>
+    <tr><td>Single P–T point instead of a path</td><td class="safe">SAFE</td><td>coarser, but the scored quantity is phase presence at one stated condition</td></tr>
+    <tr><td>Missing traces left blank</td><td class="safe">SAFE</td><td>correct "not measured" encoding</td></tr>
+    <tr><td>Coarse 7-group mapping</td><td class="safe">SAFE</td><td>lossy but symmetric — affects projection and score equally</td></tr>
+    <tr><td>Zero-filling or imputing blanks</td><td class="poison">POISON</td><td>creates a fake measurement that can be scored</td></tr>
+    <tr><td>Renormalizing to 100%</td><td class="poison">POISON</td><td>biases posterior and MAGEMin comparison in the same direction — corrupts the score</td></tr>
+    <tr><td>1970s USGS semi-quant as park input</td><td class="poison">POISON</td><td>lacks majors — any filled version is invented</td></tr>
+    <tr><td>Calling teacher-agreement "validation"</td><td class="poison">POISON</td><td>the director's top poison risk — see verdict</td></tr>
+    <tr><td>Scoring garnet/epidote/scheelite</td><td class="poison">POISON</td><td>outside the scored groups or the vocabulary entirely</td></tr>
+    <tr><td>"Consistent with" as a verdict</td><td class="poison">POISON</td><td>makes almost any observation pass</td></tr>
+    <tr><td>Post-hoc rank/threshold choice</td><td class="poison">POISON</td><td>choosing what counts as correct after seeing results</td></tr>
+    <tr><td>Thinning the register to raise the hit rate</td><td class="poison">POISON</td><td>selection bias — every attempted projection gets a line</td></tr>
+    <tr><td>Pooling synthetic with real analogues</td><td class="poison">POISON</td><td>synthetic inputs inherit their parent's answer and inflate agreement</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Solo-loop guards:</strong> cap open predictions at 10 (hit cap → next session is scoring-only); frozen rubric file, dated amendments only; SHA + input-hash health check opens every session; 20-minute minimum week; skipped weeks logged, not hidden; corrections require a threshold count of scored predictions in the same class.</p>
+
+<p><strong>Minimum viable first month:</strong> ≥10 projections registered, ≥6 scored (rest NOT SCOREABLE with reason, not open), ≥2 classes covered, ≥1 dated correction applied, ≥2 poisons logged as rejected, 4 README status lines, no open prediction >14 days old.</p>
+
+<h2 id="moves">5. First three moves (director-ranked)</h2>
+
+<ol>
+  <li><strong>PhaseCast + MAGEMin (igneous P–T, Green 2016) on the 12 BronsonHill mafics</strong> — register class A and D rows <em>before</em> looking at MAGEMin output. ~1 hour. Creates the register and the first teacher-agreement scores.</li>
+  <li><strong>pyrolite immobile classification on the same 12 (class B)</strong> — the first scorer independent of the teacher.</li>
+  <li><strong>MAGEMin at 8 kbar / 650 °C for class C claims + one observation-only park visit</strong> logging amphibolite assemblage presence/absence — the first real-world resolution.</li>
+</ol>
+
+<h2 id="predictions">6. Predictions</h2>
+
+<p><strong>Director worker predictions (scored):</strong> 6 of 9 resolved hit. The misses and hits that matter:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Prediction</th><th>Outcome</th></tr></thead>
+  <tbody>
+    <tr><td>ds-builder will miss the distillation-circularity poison and present MAGEMin agreement as validation</td><td><strong>HIT</strong> — called MAGEMin "ground truth"; never flagged that PhaseCast was trained on MAGEMin labels</td></tr>
+    <tr><td>haiku-user gets renormalization/blank-filling poison + observation-only + weekly rhythm right</td><td><strong>HIT</strong></td></tr>
+    <tr><td>haiku-user will under-specify scoring (no Brier/log-score)</td><td><strong>HIT</strong> — binary pre-registered observables, no proper scoring rules</td></tr>
+    <tr><td>At most one of three workers names teacher-agreement circularity explicitly</td><td><strong>HIT</strong> — zero did</td></tr>
+    <tr><td>ds-builder will propose a single headline metric without provenance stratification</td><td><strong>MISS</strong> — per-class scores, analogue stamps</td></tr>
+    <tr><td>glm-literature will make ≥1 unqualified conformal-coverage claim</td><td><strong>UNRESOLVED</strong> — worker cancelled</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Design predictions (on file, unscored — first cycle not yet run):</strong></p>
+<ul>
+  <li>PhaseCast top-posterior presence calls agree with MAGEMin on ≥80% of group×sample cells (falsified &lt;70%) — the distillation effect, which is exactly why class A must be labelled teacher-agreement.</li>
+  <li>Class D AUROC ≤ 0.7 (weak OOD discrimination); largest student-teacher disagreement on the low-SiO₂ (~43.9) end.</li>
+  <li>MAGEMin metabasite at 8 kbar / 650 °C returns amphibole + plagioclase in all samples; garnet in ≥3.</li>
+  <li>≥10 of 12 pass <code>check_input</code> with zero errors; pyrolite classifies ≥10 of 12 as basalt/basaltic-andesite; gate marks ≥10 of 12 trusted/borderline.</li>
+</ul>
+
+<h2 id="missing">7. What is missing</h2>
+
+<div class="callout warn">
+<p><strong>The literature round never ran.</strong> glm-literature was cancelled mid-run; its brief is preserved verbatim in the markdown report's appendix for re-dispatch. Unsettled until it lands: conformal-prediction / prediction-register precedents, the exchangeability caveat (analogue-to-park transfer breaks conformal coverage; weighted conformal, Tibshirani et al. 2019, is the reference), and the data-acquisition ladder (certified lab pricing, pXRF, XRD from literature, museum specimens). The disagreement gate was never computed — nothing here is a settled verdict until that round lands.</p>
+</div>
+
+<p class="ev">Source: <code>reports/phasecast-self-correcting-loop-2026-11-26.md</code> (abdopus run, 4 agents dispatched, 3 completed). Full markdown with the preserved re-dispatch brief: <a href="https://github.com/jwoehatz/lithos/blob/main/reports/phasecast-self-correcting-loop-2026-11-26.md">github.com/jwoehatz/lithos</a>.</p>
+</main>
+</body>
+</html>
